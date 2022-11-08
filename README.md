@@ -70,6 +70,10 @@ At this point, the app runs at http://127.0.0.1:5000/
 
 To create elements in database move to ...:5000/add
 
+### OpenAPI documentation
+```
+This application implements swagger for documenting endpoints. The documentation can be accessed via the url http://.../swagger
+```
 
 ### Learn More
 To learn Flask, check out the [Flask documentation](https://flask.palletsprojects.com/en/2.2.x/).
