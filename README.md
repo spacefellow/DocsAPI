@@ -72,7 +72,8 @@ To create elements in database move to ...:5000/add
 
 ### OpenAPI documentation
 ```
-This application implements swagger for documenting endpoints. The documentation can be accessed via the url http://.../swagger
+This application implements swagger for documenting endpoints.
+The documentation can be accessed via the url http://.../swagger
 ```
 
 ### Learn More
