@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+     <form action="{{ url_for('search')}}" method="GET" class="search-form">
+         <input type="q" class="search-input" name="q" placeholder="Введите фразу для поиска">
+     </form>
+<div class="container">
+    {% for doc in docs %}
+    <div class="row mb-2">
+    <div class="col-md-6">
+      <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+        <div class="col p-4 d-flex flex-column position-static">
+          <div class="mb-1 text-muted">{{ doc.created_date }}</div>
+            {% if doc.text %}
+          <p class="card-text mb-auto">{{ doc.text | truncate(150, True) }}</p>
+            {% endif %}
+            <p class="mb-1 text-muted">{{ doc.rubrics }}</p>
+          <a href="/doc/{{ doc.id }}" class="btn btn-sm btn-outline-secondary">Continue</a>
+        </div>
+        <div class="col-auto d-none d-lg-block">
+        </div>
+      </div>
+    </div>
+    </div>
+    {% endfor %}
+ <ul class="pagination">
+            {% if docs.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('allDocs') }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only"></span>
+                    </a>
+                </li>
+            {% endif %}
+            {% for n in docs.iter_pages() %}
+                {% if docs.page == n %}
+                    {% if docs.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('allDocs', page=docs.prev_num) }}">{{ docs.prev_num }}</a>
+                        </li>
+                    {% endif %}
+                    <li class="page-item active" aria-current="page">
+                        <a class="page-link">{{ n }}</a>
+                    </li>
+                    {% if docs.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('allDocs', page=docs.next_num) }}">{{ docs.next_num }}</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            {% if docs.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('allDocs', page=docs.pages) }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only"></span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+        </div>
+{% endblock %}

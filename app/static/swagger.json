@@ -1,0 +1,158 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "This is swagger documentation for simple Flask API with PostgreSQL database and ElasticSearch",
+    "version": "2.0.0",
+    "title": "DocumentsAPI",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "doc": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          },
+          "rubrics": {
+            "type": "string"
+          },
+          "created_date": {
+            "type": "string"
+          }
+        }
+      },
+      "id": {
+        "type": "integer",
+        "properties": {
+          "id": {
+            "type": "integer"
+          }
+        }
+      },
+      "page": {
+        "type": "integer",
+        "properties": {
+          "id": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+        "/{page}": {
+          "get": {
+            "tags": [
+              "Get document from API"
+            ],
+            "summary": "Get documents",
+            "parameters": [
+              {
+                "name": "page",
+                "in": "path",
+                "description": "Documents to get per page",
+                "required": true,
+                "type": "integer",
+                "schema": {
+                  "$ref": "#/components/schemas/page"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "schema": {
+                  "$ref": "#/components/schemas/page"
+                }
+              },
+              "404": {
+                "description": "NOT FOUND",
+                "schema": {
+                  "$ref": "#/components/schemas/page"
+                }
+              }
+            }
+          }
+        },
+        "/doc/{id}": {
+          "get": {
+            "tags": [
+              "Get document from API"
+            ],
+            "summary": "Get document",
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "description": "Document id to get",
+                "required": true,
+                "type": "integer",
+                "schema": {
+                  "$ref": "#/components/schemas/id"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "schema": {
+                  "$ref": "#/components/schemas/doc"
+                }
+              },
+              "404": {
+                "description": "NOT FOUND",
+                "schema": {
+                  "$ref": "#/components/schemas/doc"
+                }
+              }
+            }
+          }
+        },
+        "/delete/{id}": {
+          "get": {
+            "tags": [
+              "Delete doc from API"
+            ],
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "description": "doc id to delete",
+                "required": true,
+                "type": "integer",
+                "schema": {
+                  "$ref": "#/components/schemas/id"
+                }
+              }
+            ],
+            "summary": "Delete doc",
+            "responses": {
+              "200": {
+                "description": "OK if you get list of documents on 1st page",
+                "schema": {
+                  "$ref": "#/components/schemas/doc"
+                }
+              },
+              "404": {
+                "description": "NOT FOUND",
+                "schema": {
+                  "$ref": "#/components/schemas/doc"
+                }
+              }
+            }
+          }
+        }
+  }
+}

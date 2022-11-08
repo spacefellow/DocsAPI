@@ -1,0 +1,48 @@
+version: '3'
+
+
+services:
+
+  app:
+    build:
+      context: ./app
+    container_name: docs_flask
+    command: gunicorn --bind 0.0.0.0:5000 run:app
+    env_file:
+      - .flaskenv
+    ports:
+      - "5000:5000"
+    depends_on:
+      - database
+      - elasticsearch
+#    environment:
+#      - ELASTICSEARCH_NODES=http://elasticsearch:9200
+    restart: always
+
+  database:
+    image: postgres:13
+    container_name: docs_postgres
+    env_file:
+      - .dbenv
+    volumes:
+      - ./pg_db:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.4.0
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - discovery.seed_hosts=elasticsearch
+      - cluster.initial_master_nodes=elasticsearch
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+   <article class="blog-post">
+        <p class="blog-post-meta">{{ doc.created_date }}</p>
+        <p>{{ doc.rubrics }}</p>
+        <hr>
+        <p> {{ doc.text }}</p>
+      </article>
+{% endblock %}

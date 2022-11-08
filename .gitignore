@@ -1,0 +1,11 @@
+# created by virtualenv automatically
+include
+Lib
+migrations
+Scripts
+__pycache__
+pyvenv.cfg
+.idea
+.flaskenv
+.dbenv
+pg_db
