@@ -120,8 +120,44 @@
             }
           }
         },
-        "/delete/{id}": {
+        "/search": {
           "get": {
+            "tags": [
+              "Get document from API"
+            ],
+            "summary": "Search document",
+            "parameters": [
+              {
+                "in": "query",
+                "name": "q",
+                "description": "Document id to get",
+                "required": true,
+                "type": "string",
+                "schema": {
+                    "$ref": "#/components/schemas/q"
+                }
+              }
+            ],
+
+            "responses": {
+              "200": {
+                "description": "OK",
+                "schema": {
+                  "$ref": "#/components/schemas/doc"
+                }
+              },
+              "404": {
+                "description": "NOT FOUND",
+                "schema": {
+                  "$ref": "#/components/schemas/doc"
+                }
+              }
+            }
+          }
+
+        },
+        "/delete/{id}": {
+          "delete": {
             "tags": [
               "Delete doc from API"
             ],
@@ -140,13 +176,13 @@
             "summary": "Delete doc",
             "responses": {
               "200": {
-                "description": "OK if you get list of documents on 1st page",
+                "description": "The object was successfully deleted",
                 "schema": {
                   "$ref": "#/components/schemas/doc"
                 }
               },
               "404": {
-                "description": "NOT FOUND",
+                "description": "Object not found",
                 "schema": {
                   "$ref": "#/components/schemas/doc"
                 }

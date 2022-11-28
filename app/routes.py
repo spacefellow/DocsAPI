@@ -1,4 +1,4 @@
-from flask import render_template, url_for, request, redirect, current_app
+from flask import url_for, request, redirect, current_app, jsonify
 from init import create_app, db, PER_PAGE
 from config import app_config
 from models import Document
@@ -6,7 +6,6 @@ from base_function import parse_csv
 from flask_swagger_ui import get_swaggerui_blueprint
 
 app = create_app(app_config)
-
 
 SWAGGER_URL = '/swagger'
 API_URL = '/static/swagger.json'
@@ -24,34 +23,74 @@ app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
 @app.route("/<int:page>", methods=["GET", "POST"])
 def allDocs(page):
     docs = Document.query.paginate(page=page, per_page=PER_PAGE)
-    return render_template("docs.html", docs=docs)
+    data = []
+
+    for doc in docs.items:
+        data.append({
+            'id': doc.id,
+            'text': doc.text,
+            'rubrics': doc.rubrics,
+            'created_date': doc.created_date
+        })
+
+    meta = {
+        "page": docs.page,
+        'pages': docs.pages,
+        'total_count': docs.total,
+        'prev_page': docs.prev_num,
+        'next_page': docs.next_num,
+        'has_next': docs.has_next,
+        'has_prev': docs.has_prev,
+
+    }
+    return jsonify({'data': data, "meta": meta})
 
 
 @app.route("/doc/<int:id>", methods=["GET", "POST"])
 def doc_detail(id):
     doc = Document.query.get_or_404(id)
-    return render_template("doc_detail.html", doc=doc)
+    res = {
+        'id': doc.id,
+        'text': doc.text,
+        'rubrics': doc.rubrics,
+        'created_date': doc.created_date
+    }
+    return jsonify(res)
 
 
 @app.route("/search", methods=["GET", "POST"])
 def search():
     q = request.args["q"].lower()
-    res = current_app.elasticsearch.search(index="documents", size=20,
-                                           body={"query": {"multi_match": {"query": q,
-                                                                           "fields": ["text"]}}}
-                                           )
-    res['hits']['hits'].sort(key=lambda d: d['_source']['created_date'], reverse=True)
-    return render_template('search.html', res=res, term=q)
+    data = current_app.elasticsearch.search(index="documents", size=20,
+                                            body={"query":
+                                                      {"multi_match":
+                                                           {"query": q,
+                                                            "fields": ["text"]
+                                                            }
+                                                       }
+                                                  }
+                                            )
+
+    res = []
+    for doc in data['hits']['hits']:
+        buf = Document.query.filter_by(text=doc['_source']['text']).first_or_404()
+        res.append({
+            'text': doc['_source']['text'],
+            'rubrics': buf.rubrics,
+            'created_date': buf.created_date
+        })
+    res.sort(key=lambda obj: obj['created_date'], reverse=True)
+    return jsonify(res[:20])
 
 
-@app.route("/delete/<int:id>", methods=["GET", "POST"])
+@app.route("/delete/<int:id>", methods=["DELETE"])
 def delete(id):
     try:
         doc = Document.query.get_or_404(id)
-        current_app.elasticsearch.delete(index="documents", id=id, ignore=404)
         db.session.delete(doc)
+        current_app.elasticsearch.delete(index="documents", id=id, ignore=404)
         db.session.commit()
-        return redirect(url_for("allDocs"))
+        return f'Document was successfully deleted'
     except Exception as e:
         return f'Cannot delete document because of {e}'
 
@@ -78,9 +117,7 @@ def add():
     id = 1
     for doc in docs:
         data = {
-            "text": doc.text,
-            "rubrics": doc.rubrics,
-            "created_date": doc.created_date
+            "text": doc.text
         }
         current_app.elasticsearch.index(index="documents", id=id, body=data)
         id += 1
