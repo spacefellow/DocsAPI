@@ -2,7 +2,7 @@ from flask import url_for, request, redirect, current_app, jsonify
 from init import create_app, db, PER_PAGE
 from config import app_config
 from models import Document
-from base_function import parse_csv
+from base_function import parse_csv, model_to_dict
 from flask_swagger_ui import get_swaggerui_blueprint
 
 app = create_app(app_config)
@@ -26,12 +26,7 @@ def allDocs(page):
     data = []
 
     for doc in docs.items:
-        data.append({
-            'id': doc.id,
-            'text': doc.text,
-            'rubrics': doc.rubrics,
-            'created_date': doc.created_date
-        })
+        data.append(model_to_dict(doc))
 
     meta = {
         "page": docs.page,
@@ -49,12 +44,7 @@ def allDocs(page):
 @app.route("/doc/<int:id>", methods=["GET", "POST"])
 def doc_detail(id):
     doc = Document.query.get_or_404(id)
-    res = {
-        'id': doc.id,
-        'text': doc.text,
-        'rubrics': doc.rubrics,
-        'created_date': doc.created_date
-    }
+    res = model_to_dict(doc)
     return jsonify(res)
 
 
