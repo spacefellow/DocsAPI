@@ -25,6 +25,7 @@ POSTGRES_USER=user
 POSTGRES_PASSWORD=password
 POSTGRES_DB=name of database
 PGDATA=/var/lib/pgsql/data
+```
 >Start the APP in Docker
 ```
 $ docker-compose up --build
