@@ -1,53 +1,70 @@
-## RUSSPASS HACKATHON
+## DocsAPI
+A simple search engine for the texts of documents. It stores and serves data with Flask, PostgreSQL, Elasticsearch web application.
 
-This solution used technologies such as: FastApi, PostgreSQL, Sklearn, Pandas. The latter were used to implement a collaborative recommendation system for users.
-
+Before using app, install elasticsearch and run it in cmd.
 
 ### Start the app in Docker
-
 >Download the code
 ```
-$ git clone https://github.com/Svogg/xakaton
-Create .dbenv and .env_dev files in root folder
-$ cd xakaton
+$ git clone https://github.com/spacefellow/DocsAPI.git
+Create .dbenv and .env files in root folder
+$ cd DocsAPI
 ```
-
->.env_dev contains
+>.flaskenv contains
 ```
+FLASK_APP=./run.py
+FLASK_DEBUG=True
+DATABASE_URL=some database url
 SECRET_KEY=some secret key
+ELASTICSEARCH_URL=http://elasticsearch:9200 (for docker setup)
+ELASTICSEARCH_URL=http://username:password@localhost:9200 (for Windows setup)
 ```
-
 >.dbenv contains
 ```
-POSTGRES_DRIVER=postgresql
-POSTGRES_CONNECTOR=asyncpg
 POSTGRES_USER=user
-POSTGRES_PASS=pass
-POSTGRES_HOST=DATABASE
-POSTGRES_PORT=5432
-DB_NAME=db_name
+POSTGRES_PASSWORD=password
+POSTGRES_DB=name of database
+PGDATA=/var/lib/pgsql/data
+>Start the APP in Docker
 ```
+$ docker-compose up --build
+```
+At this point, the app runs at http://localhost:8000/
 
->Make docker images
+### Set Up the app in Windows
+>Download the code
 ```
-$ docker-compose build
-$ docker-compose up -d
+$ git clone https://github.com/spacefellow/DocsAPI.git
+Create .flaskenv file in root folder
+$ cd DocsAPI
 ```
+>Install modules VENV
+```
+$ virtualenv env
+$ .\env\Scripts\activate
+$ pip install -r requirements.txt
+```
+>Set Up Flask Environment
+```
+$ set FLASK_APP=run.py
+```
+### Start the app
 
->Create database in db_container
+>Create database 'db name' in PostgreSQL
 ```
-$ docker-compose exec -it database psql —host database -U
-$ CREATE DATABASE db_name;
+$ flask db init
+$ flask db migrate -m "Some info"
+$ flask db upgrade
+$ flask run
 ```
+At this point, the app runs at http://127.0.0.1:5000/
 
->Create alembic migrations in the backend_container and load data into the database
-```
-$ docker-compose exec -it backend bash
-$ alembic init migrations
-$ alembic revision --autogenerate -m "initial"
-$ alembic upgrade HEAD
-$ python dbinit.py
-```
+To create elements in database move to ...:5000/add
 
-At this point, the backend runs at http://localhost:8000/
-Frontend runs at http://localhost:8000/
+### OpenAPI documentation
+This application implements swagger for documenting endpoints.
+The documentation can be accessed via the url http://.../swagger
+### Learn More
+To learn Flask, check out the Flask documentation.
+
+To learn more about Elasticsearch, check out the Elasticsearch documentation
